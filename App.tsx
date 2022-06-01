@@ -8,12 +8,13 @@
  * @format
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   SafeAreaView,
   ScrollView,
   StatusBar,
+  StyleProp,
   StyleSheet,
   Text,
   TextInput,
@@ -29,29 +30,44 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-import Section from "./src/components/Section";
 
-import PhoneVerification from './src/services/PhoneAuth';
 
-function checkLogin(){
+import auth from '@react-native-firebase/auth';
+import Login from './src/scenes/Login';
+//import Login from './src/scenes/Login';
 
+function App() {
+const $highlight: StyleProp<any> = {
+  fontWeight: '700',
+}
+const $backgroundStyle: StyleProp<any> = {
+  backgroundColor: useColorScheme() === 'dark' ? Colors.darker : Colors.lighter,
+};
+// Set an initializing state whilst Firebase connects
+const [initializing, setInitializing] = useState(true);
+const [user, setUser] = useState<any>(null);
+
+// Handle user state changes
+function onAuthStateChanged(user: any) {
+  setUser(user);
+  if (initializing) setInitializing(false);
 }
 
+useEffect(() => {
+  const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+  return subscriber; // unsubscribe on unmount
+}, []);
 
-
-const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+  
+  if(initializing) return(<></>);
+  if(!user) return( <SafeAreaView><Login /></SafeAreaView>);
+  
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <SafeAreaView>
       <View>
-        <Text>Hello</Text>
-        <PhoneVerification></PhoneVerification>
-       
+        <Text>Hello {user.displayName},</Text>
+        <Text>{JSON.stringify(user)}</Text>
+        <Button title="Logout" onPress={() => auth().signOut()} />
       </View>
     </SafeAreaView>
 
@@ -86,10 +102,8 @@ const App = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  highlight: {
-    fontWeight: '700',
-  },
-});
+
+
+
 
 export default App;

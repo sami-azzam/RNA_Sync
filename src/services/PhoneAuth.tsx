@@ -66,7 +66,7 @@ export default function PhoneVerification() {
     }
   }
 
-  if (initializing) return null;
+  if (initializing) return <></>;
 
   if (!user) {
     return <Button title="Login" onPress={() => createAccount()} />;
