@@ -18,15 +18,7 @@ const Section: React.FC<{
           ]}>
           {title}
         </Text>
-        <Text
-          style={[
-            styles.sectionDescription,
-            {
-              color: isDarkMode ? Colors.light : Colors.dark,
-            },
-          ]}>
-          {children}
-        </Text>
+        {children}
       </View>
     );
   };
