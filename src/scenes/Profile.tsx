@@ -7,10 +7,11 @@ import Section from "../components/Section";
 
 
 export default function Profile({user, userData}: any){
-    
+
    ["isAnonymous", "emailVerified", "metadata", "providerData", "providerId", "refreshToken", "tenantId"].forEach(key=>{
        delete user._user[key];
    })
+   const userInfo = userData !== undefined ? userData : user._user;
 
     const userDataTemplate: userProfile = {
         displayName: "",
@@ -27,12 +28,11 @@ export default function Profile({user, userData}: any){
         userData = userDataTemplate;
     } 
     
-   
-    const [extraUserData, setUserData] = useState<userProfile>(userData);
-    const [defaultUserData, setDefault] = useState(user._user);
+    const [userProfile, setUserProfile] = useState<userProfile>(userInfo);
+    
 
     function incomplete(){
-        if(userData === undefined){
+        if(userProfile === undefined){
             return 'Please Complete';
         }
         else {
@@ -43,16 +43,10 @@ export default function Profile({user, userData}: any){
 
     async function submit(){
     try{
-        const $user = firebase.firestore().doc('users/' + user.uid);
-        await $user.set({
-            ...defaultUserData,
-            ...extraUserData
-        });
+        const $user = firebase.firestore().doc('users/' + user.uid); //Why ?
+        await $user.set(userProfile);
     }
     catch(error){
-        console.log("Hello there!! This is me!");
-        console.log(JSON.stringify({...defaultUserData,
-            ...extraUserData}));
         console.log(error);
     }
     }
@@ -62,15 +56,15 @@ export default function Profile({user, userData}: any){
         <Text style={$title}>{incomplete()} Your Profile</Text>
 
         <Section title="Personal Details">
-            <TextInput style={$textInput} placeholder="Name" value={defaultUserData.displayName} onChangeText={(text)=>setDefault((prev: any)=>({...prev, displayName: text}))}></TextInput>
-            <TextInput style={$textInput} placeholder="Email" value={defaultUserData.email} onChangeText={ (text)=>setDefault( (prev: any)=>({...prev, email: text})) }></TextInput>
+            <TextInput style={$textInput} placeholder="Name" value={userProfile.displayName} onChangeText={(text)=>setUserProfile((prev: any)=>({...prev, displayName: text}))}></TextInput>
+            <TextInput style={$textInput} placeholder="Email" value={userProfile.email} onChangeText={ (text)=>setUserProfile( (prev: any)=>({...prev, email: text})) }></TextInput>
             <TextInput style={$textInput} value={user.phoneNumber} editable={false}></TextInput>
         </Section>
         <Section title="Car Details">
-            <TextInput style={$textInput} placeholder="Emirate" value={extraUserData.emirate} onChangeText={(text)=>setUserData((prev) => ({...prev, emirate: text}))}></TextInput>
-            <TextInput style={$textInput} placeholder="Plate No" value={extraUserData.plateNo} onChangeText={(text)=>setUserData((prev) => ({...prev, plateNo: text}))}></TextInput>
-            <TextInput style={$textInput} placeholder="Car Type" value={extraUserData.carType} onChangeText={(text)=>setUserData((prev) => ({...prev, carType: text}))}></TextInput>
-            <TextInput style={$textInput} placeholder="Car Color" value={extraUserData.carColor} onChangeText={(text)=>setUserData((prev) => ({...prev, carColor: text}))}></TextInput>
+            <TextInput style={$textInput} placeholder="Emirate" value={userProfile.emirate} onChangeText={(text)=>setUserProfile((prev) => ({...prev, emirate: text}))}></TextInput>
+            <TextInput style={$textInput} placeholder="Plate No" value={userProfile.plateNo} onChangeText={(text)=>setUserProfile((prev) => ({...prev, plateNo: text}))}></TextInput>
+            <TextInput style={$textInput} placeholder="Car Type" value={userProfile.carType} onChangeText={(text)=>setUserProfile((prev) => ({...prev, carType: text}))}></TextInput>
+            <TextInput style={$textInput} placeholder="Car Color" value={userProfile.carColor} onChangeText={(text)=>setUserProfile((prev) => ({...prev, carColor: text}))}></TextInput>
         </Section>
         <Button title="Save" onPress={submit}></Button>
         </ScrollView>

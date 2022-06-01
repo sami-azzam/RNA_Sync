@@ -12,25 +12,14 @@ import React, { useEffect, useState } from 'react';
 import {
   Button,
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleProp,
-  StyleSheet,
-  Text,
-  TextInput,
   useColorScheme,
   View,
 } from 'react-native';
 
 import {
   Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-
-
 
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -51,14 +40,13 @@ const [user, setUser] = useState<any>(null);
 const [userData, setUserData] = useState<any>(null);
 
 // Handle user state changes
-function onAuthStateChanged(user: any) {
+async function onAuthStateChanged(user: any) {
   setUser(user);
   if(user){
-    firestore().collection('users').doc(user.uid).get().then(function(doc) {
-      if (doc.exists) {
-        setUserData(doc.data());
-      }
-    });
+    const doc = await firestore().collection('users').doc(user.uid).get()
+    if (doc.exists) {
+      setUserData(doc.data());
+    }
   }
   if (initializing) setInitializing(false);
 }
@@ -70,27 +58,18 @@ useEffect(() => {
   
   
   if(initializing) return(<></>);
-  const userD = firestore().collection('users').doc(user?.uid).get();
   
 
   if(!user) return( <SafeAreaView><Login /></SafeAreaView>);
   
     return (
       <SafeAreaView>
-        {/* <View>
-          <Text>Hello {user.displayName},</Text>
-          <Text>{JSON.stringify(user)}</Text>
-          <Text>{typeof user}</Text>
-          <Button title="Logout" onPress={() => auth().signOut()} />
-        </View> */}
-        <Profile user={user}></Profile>
+        <Profile user={user} userData={userData}></Profile>
+        <Button title="Logout" onPress={() => auth().signOut()} />
       </SafeAreaView>
     );
   
 };
-
-
-
 
 
 export default App;
