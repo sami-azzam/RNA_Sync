@@ -3,7 +3,7 @@ export type userProfile = {
     displayName: string,
     email: string,
     phoneNumber: string,
-    photoURL: string,
+    photoURL?: string,
     emirate: string,
     plateNo: string,
     carType: string,

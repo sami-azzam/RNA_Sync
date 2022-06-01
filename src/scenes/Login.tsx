@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Button, Text, TextInput, View } from 'react-native';
 import auth from '@react-native-firebase/auth';
 
-import firestore from '@react-native-firebase/firestore';
-
 
 export default function Login() {
   // If null, no SMS has been sent

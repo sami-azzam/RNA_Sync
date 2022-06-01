@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import {Button, ColorValue, ScrollView, StyleProp, Text, TextInput, TextStyle} from "react-native";
-import auth, { firebase } from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
+import {Button,  ScrollView, StyleProp, Text, TextInput, TextStyle} from "react-native";
+import { firebase } from "@react-native-firebase/auth";
 import {userProfile} from "../models/types";
 import Section from "../components/Section";
 
