@@ -11,10 +11,9 @@ export type userProfile = {
 }
 export interface appState {
     //Used in App.tsx
-    user: any;
-    userData: any;
-    initializing: boolean;
-    test: string;
+    user: any; //auth user
+    userData: any; //firestore user data
+    initializing: boolean; //initializing firebase
     setUser: (user : any) => void;
     setUserData: (userData : any) => void;
     setInitializing: (initializing : boolean) => void;

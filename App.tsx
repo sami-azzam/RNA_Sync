@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Button,
     SafeAreaView,
@@ -15,23 +15,28 @@ import useStore from './src/models/store';
 export default function App(){
     
 
-    const user = useStore((state) => state.user);
-    const userData = useStore((state) => state.userData);
-    const initializing = useStore((state) => state.initializing);
-    const setUser = useStore((state) => state.setUser);
-    const setUserData = useStore((state) => state.setUserData);
-    const setInitializing = useStore((state) => state.setInitializing);
+  const user = useStore((state) => state.user);
+  const userData = useStore((state) => state.userData);
+  const initializing = useStore((state) => state.initializing);
+  const setUser = useStore((state) => state.setUser);
+  const setUserData = useStore((state) => state.setUserData);
+  const setInitializing = useStore((state) => state.setInitializing);
     
+  const [reRender, setRerender] = useState(false);
   
   // Handle user state changes
-  async function onAuthStateChanged(user: any) {
-    setUser(user);
-    if(user){
-      const doc = await firestore().doc('users/' + user.uid).get();
+  async function onAuthStateChanged(passedUser: any) {
+    setUser(passedUser);
+    if(passedUser){
+      const doc = await firestore().doc('users/' + passedUser.uid).get();
       if (doc.exists) {
         setUserData(doc.data());
       } 
+    } else {
+      userData !== undefined ? setUserData(undefined) : null; // Reset userData on logout
+      user !== undefined ? setUser(undefined) : null; // Reset user on logout
     }
+
     if (initializing) setInitializing(false);
     
   }
@@ -44,8 +49,13 @@ export default function App(){
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
-  }, []);
+  }, [reRender]);
     
+
+  function logout(){
+    auth().signOut(); 
+    setRerender((p)=>!p)
+  }
   //Wait for Firebase to initialize
   if(initializing) return(<></>);
 
@@ -56,7 +66,7 @@ export default function App(){
   return (
     <SafeAreaView>
       <Profile user={user} userData={userData}></Profile>
-      <Button title="Logout" onPress={() => auth().signOut()} />
+      <Button title="Logout" onPress={logout} />
     </SafeAreaView>
   );
 
