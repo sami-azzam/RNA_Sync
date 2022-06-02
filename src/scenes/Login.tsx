@@ -14,7 +14,7 @@ export default function Login() {
 
   // Handle the button press
   async function signInWithPhoneNumber(phoneNumber : string) {
-    //Test if Phone number is valid here, if it's invalid, use SetError to show error message.
+    // Test if Phone number is valid here, if it's invalid, use SetError to show error message.
     // if(!valid) setError(true);
     // return;
     const confirmation : any = await auth().signInWithPhoneNumber(phoneNumber);
@@ -24,7 +24,9 @@ export default function Login() {
   async function confirmCode() {
     try {
       await confirm.confirm(code);
+      setError(false);
     } catch (error) {
+      setError(true)
       console.log('Invalid code.');
     }
   }
@@ -38,7 +40,7 @@ export default function Login() {
         onPress={() => signInWithPhoneNumber(phone)}
       />
     
-    { error && <Text style={$error} >The Phone number is invalid.</Text>}
+    { error && <Text style={$error} >The Phone number or code is invalid.</Text>}
     
     </View>
       

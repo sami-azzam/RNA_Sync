@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import {Button,  ScrollView, StyleProp, Text, TextInput, TextStyle} from "react-native";
-import { firebase } from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
 import {userProfile} from "../models/types";
 import Section from "../components/Section";
 
 
 export default function Profile({user, userData}: any){
+    //This deleted unnecesary keys from the user._user object.
+    ["isAnonymous", "emailVerified", "metadata", "providerData", "providerId", "refreshToken", "tenantId"].forEach(key=>{
+        delete user._user[key];
+    });
 
-   ["isAnonymous", "emailVerified", "metadata", "providerData", "providerId", "refreshToken", "tenantId"].forEach(key=>{
-       delete user._user[key];
-   })
    const userDataTemplate: userProfile = {
     displayName: "",
     email: "",
@@ -20,22 +21,19 @@ export default function Profile({user, userData}: any){
     carType: "",
     carColor: ""
     };
+    // Merge with template to make sure all keys are set
+   const userInfo = (userData === undefined) ? 
+        {...userDataTemplate, ...user._user } : 
+        {...userDataTemplate, ...user._user, ...userData};
 
-   const userInfo = (userData !== undefined) ? 
-        {...userDataTemplate, ...user._user, ...userData} : 
-        {...userDataTemplate, ...user._user};
-
-
-     if(userData === undefined){
-        userData = userDataTemplate;
-    } 
     
     const [userProfile, setUserProfile] = useState<userProfile>(userInfo);
     
     const [isComplete, setComplete] = useState<boolean>(false);
-
+    const [error, setError] = useState<boolean>(false);
+    // Change the title if incomplete profile
     function incomplete(){
-        if(userProfile === undefined){
+        if(userData === undefined){
             return 'Please Complete';
         }
         else {
@@ -43,16 +41,17 @@ export default function Profile({user, userData}: any){
         };
     }
    
-
     async function submit(){
-    try{
-        const $user = firebase.firestore().doc('users/' + user.uid); //Why ?
-        await $user.set(userProfile);
-        setComplete(true);
-    }
-    catch(error){
-        console.log(error);
-    }
+        try{
+            const $user = firestore().doc('users/' + user.uid);
+            await $user.set(userProfile);
+            setComplete(true);
+            error === true ? setError(false): null;
+        }
+        catch(error){
+            console.log(error);
+            setError(true);
+        }
     }
 
     return(
@@ -72,11 +71,13 @@ export default function Profile({user, userData}: any){
         </Section>
         <Button title="Save" onPress={submit}></Button>
         {isComplete && <Text style={$complete}>Profile Saved</Text>}
+        {error && <Text style={$error}>Please chack your internet connection and try again.</Text>}
         </ScrollView>
     );
     
 }
 
+// Styles
 const $textInput: StyleProp<TextStyle> = {
     height: 40,
     margin: 12,
@@ -93,6 +94,11 @@ const $textInput: StyleProp<TextStyle> = {
 const $complete : StyleProp<TextStyle> = {
     fontSize: 20,
     fontWeight: "bold",
-    color: "green",
     textAlign: "center",
+    color: "green",
+}
+
+const $error : StyleProp<TextStyle> = {
+    ...$complete,
+    color: "red",
 }
