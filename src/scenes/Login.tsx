@@ -26,8 +26,8 @@ export default function Login() {
       await confirm.confirm(code);
       setError(false);
     } catch (error) {
-      setError(true)
-      console.log('Invalid code.');
+      console.log("Error: invalid code. ", error);
+      setError(true);
     }
   }
 

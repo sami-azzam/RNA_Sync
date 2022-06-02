@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import {
   Button,
   SafeAreaView,
@@ -8,7 +9,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import Login from './src/scenes/Login';
 import Profile from './src/scenes/Profile';
-//import Login from './src/scenes/Login';
+
 
 export default function App() {
 
@@ -19,11 +20,12 @@ export default function App() {
   //Firestore user data
   const [userData, setUserData] = useState<any>(undefined);
 
+  
   // Handle user state changes
   async function onAuthStateChanged(user: any) {
     setUser(user);
     if(user){
-      const doc = await firestore().doc('users/' + user.uid).get()
+      const doc = await firestore().doc('users/' + user.uid).get();
       if (doc.exists) {
         setUserData(doc.data());
       } 
