@@ -37,7 +37,7 @@ const $backgroundStyle: StyleProp<any> = {
 // Set an initializing state whilst Firebase connects
 const [initializing, setInitializing] = useState(true);
 const [user, setUser] = useState<any>(null);
-const [userData, setUserData] = useState<any>(null);
+const [userData, setUserData] = useState<any>(undefined);
 
 // Handle user state changes
 async function onAuthStateChanged(user: any) {

@@ -10,25 +10,29 @@ export default function Profile({user, userData}: any){
    ["isAnonymous", "emailVerified", "metadata", "providerData", "providerId", "refreshToken", "tenantId"].forEach(key=>{
        delete user._user[key];
    })
-   const userInfo = userData !== undefined ? userData : user._user;
+   const userDataTemplate: userProfile = {
+    displayName: "",
+    email: "",
+    phoneNumber: "",
+    photoURL: "",
+    emirate: "",
+    plateNo: "",
+    carType: "",
+    carColor: ""
+    };
 
-    const userDataTemplate: userProfile = {
-        displayName: "",
-        email: "",
-        phoneNumber: "",
-        photoURL: "",
-        emirate: "",
-        plateNo: "",
-        carType: "",
-        carColor: ""
-    }
-   
+   const userInfo = (userData !== undefined) ? 
+        {...userDataTemplate, ...user._user, ...userData} : 
+        {...userDataTemplate, ...user._user};
+
+
      if(userData === undefined){
         userData = userDataTemplate;
     } 
     
     const [userProfile, setUserProfile] = useState<userProfile>(userInfo);
     
+    const [isComplete, setComplete] = useState<boolean>(false);
 
     function incomplete(){
         if(userProfile === undefined){
@@ -44,6 +48,7 @@ export default function Profile({user, userData}: any){
     try{
         const $user = firebase.firestore().doc('users/' + user.uid); //Why ?
         await $user.set(userProfile);
+        setComplete(true);
     }
     catch(error){
         console.log(error);
@@ -57,7 +62,7 @@ export default function Profile({user, userData}: any){
         <Section title="Personal Details">
             <TextInput style={$textInput} placeholder="Name" value={userProfile.displayName} onChangeText={(text)=>setUserProfile((prev: any)=>({...prev, displayName: text}))}></TextInput>
             <TextInput style={$textInput} placeholder="Email" value={userProfile.email} onChangeText={ (text)=>setUserProfile( (prev: any)=>({...prev, email: text})) }></TextInput>
-            <TextInput style={$textInput} value={user.phoneNumber} editable={false}></TextInput>
+            <TextInput style={$textInput} value={userProfile.phoneNumber} editable={false}></TextInput>
         </Section>
         <Section title="Car Details">
             <TextInput style={$textInput} placeholder="Emirate" value={userProfile.emirate} onChangeText={(text)=>setUserProfile((prev) => ({...prev, emirate: text}))}></TextInput>
@@ -66,6 +71,7 @@ export default function Profile({user, userData}: any){
             <TextInput style={$textInput} placeholder="Car Color" value={userProfile.carColor} onChangeText={(text)=>setUserProfile((prev) => ({...prev, carColor: text}))}></TextInput>
         </Section>
         <Button title="Save" onPress={submit}></Button>
+        {isComplete && <Text style={$complete}>Profile Saved</Text>}
         </ScrollView>
     );
     
@@ -82,4 +88,11 @@ const $textInput: StyleProp<TextStyle> = {
     fontSize: 20,
     fontWeight: "bold",
     color: "black",
+}
+
+const $complete : StyleProp<TextStyle> = {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "green",
+    textAlign: "center",
 }
