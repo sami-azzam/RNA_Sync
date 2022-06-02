@@ -12,6 +12,9 @@ export default function Login() {
 
   const [error, setError] = useState(false);
 
+  
+
+
   // Handle the button press
   async function signInWithPhoneNumber(phoneNumber : string) {
     // Test if Phone number is valid here, if it's invalid, use SetError to show error message.

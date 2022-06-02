@@ -6,32 +6,16 @@ import {
   
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import Login from './../../src/scenes/Login';
-import Profile from './../../src/scenes/Profile';
+import Login from './Login';
+import Profile from './Profile';
 
 import create from 'zustand';
-import { userProfile } from '../models/types';
+import { appState } from '../models/types';
+import useStore from '../models/store';
 
 
-function Test(){
-    interface appState {
-        user: any;
-        userData: any;
-        initializing: boolean;
-        test: string;
-        setUser: (user : any) => void;
-        setUserData: (userData : any) => void;
-        setInitializing: (initializing : boolean) => void;
-    }
-    const useStore = create<appState>((set) => ({
-        user: undefined,
-        userData: undefined,
-        initializing: true,
-        test: 'Hello World',
-        setUser: (user: any) => set((state) => ({ ...state, user: user })),
-        setUserData: (userData: any) => set((state) => ({ ...state, userData: userData })),
-        setInitializing: (initializing: boolean) => set((state) => ({ ...state, initializing: initializing }))
-    }));
+export default function Test(){
+
     const user = useStore((state) => state.user);
     const userData = useStore((state) => state.userData);
     const initializing = useStore((state) => state.initializing);

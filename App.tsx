@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from 'react';
-
+import React, { useEffect } from 'react';
 import {
-  Button,
-  SafeAreaView,
-} from 'react-native';
-
+    Button,
+    SafeAreaView,
+  } from 'react-native';
+  
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import Login from './src/scenes/Login';
 import Profile from './src/scenes/Profile';
 
+import useStore from './src/models/store';
 
-export default function App() {
 
-  // Set an initializing state whilst Firebase connects
-  const [initializing, setInitializing] = useState(true);
-  //Default user
-  const [user, setUser] = useState<any>(null);
-  //Firestore user data
-  const [userData, setUserData] = useState<any>(undefined);
+export default function App(){
+    
 
+    const user = useStore((state) => state.user);
+    const userData = useStore((state) => state.userData);
+    const initializing = useStore((state) => state.initializing);
+    const setUser = useStore((state) => state.setUser);
+    const setUserData = useStore((state) => state.setUserData);
+    const setInitializing = useStore((state) => state.setInitializing);
+    
   
   // Handle user state changes
   async function onAuthStateChanged(user: any) {
@@ -31,6 +33,7 @@ export default function App() {
       } 
     }
     if (initializing) setInitializing(false);
+    
   }
 
   /* 
@@ -56,8 +59,9 @@ export default function App() {
       <Button title="Logout" onPress={() => auth().signOut()} />
     </SafeAreaView>
   );
-    
-};
+
+
+}
 
 
 
